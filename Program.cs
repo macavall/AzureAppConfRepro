@@ -25,14 +25,7 @@ public class Program
                 throw new InvalidOperationException("The environment variable 'AZURE_APPCONFIG_CONNECTION_STRING' is not set or is empty.");
             options.Connect(connectionString)
                    // Load all keys that start with `TestApp:` and have no label
-                   .Select("TestApp")
-                   // Reload configuration if any selected key-values have changed.
-                   // Use the default refresh interval of 30 seconds. It can be overridden via AzureAppConfigurationRefreshOptions.SetRefreshInterval.
-                   .ConfigureRefresh(refreshOptions =>
-                   {
-                       refreshOptions.RegisterAll();
-                       refreshOptions.SetRefreshInterval(TimeSpan.FromSeconds(5));
-                   });
+                   .Select("TestApp");
         });
 
         builder.Services
@@ -85,6 +78,6 @@ public class Program
                     break;
                 }
             }
-        }
+        } 
     }
 }
