@@ -39,7 +39,7 @@ namespace AppConfigRefresh
         public string SayHello([ActivityTrigger] string name, FunctionContext executionContext)
         {
             ILogger logger = executionContext.GetLogger("SayHello");
-            logger.LogInformation("Saying hello to {name}.", _configuration["TestApp"]);
+            logger.LogInformation("Saying hello to: " + _configuration["TestApp"]);
             return $"Hello {name}!";
         }
 
