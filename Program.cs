@@ -19,23 +19,23 @@ public class Program
         var builder = FunctionsApplication.CreateBuilder(args);
 
         // Connect to Azure App Configuration
-        builder.Configuration.AddAzureAppConfiguration(options =>
-        {
-            string connectionString = Environment.GetEnvironmentVariable("AZURE_APPCONFIG_CONNECTION_STRING") ??
-                throw new InvalidOperationException("The environment variable 'AZURE_APPCONFIG_CONNECTION_STRING' is not set or is empty.");
-            options.Connect(connectionString)
-                   // Load all keys that start with `TestApp:` and have no label
-                   .Select("TestApp");
-        });
+        //builder.Configuration.AddAzureAppConfiguration(options =>
+        //{
+        //    string connectionString = Environment.GetEnvironmentVariable("AZURE_APPCONFIG_CONNECTION_STRING") ??
+        //        throw new InvalidOperationException("The environment variable 'AZURE_APPCONFIG_CONNECTION_STRING' is not set or is empty.");
+        //    options.Connect(connectionString)
+        //           // Load all keys that start with `TestApp:` and have no label
+        //           .Select("TestApp");
+        //});
 
         builder.Services
             .AddApplicationInsightsTelemetryWorkerService()
-            .ConfigureFunctionsApplicationInsights()
-            .AddHostedService<AzureAppConfigRefreshService>()
-            .AddAzureAppConfiguration()
-            .AddFeatureManagement();
+            .ConfigureFunctionsApplicationInsights();
+            //.AddHostedService<AzureAppConfigRefreshService>()
+            //.AddAzureAppConfiguration()
+            //.AddFeatureManagement();
 
-        builder.UseAzureAppConfiguration();
+        //builder.UseAzureAppConfiguration();
         builder.ConfigureFunctionsWebApplication();
 
         builder.Build().Run();
