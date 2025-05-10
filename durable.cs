@@ -11,12 +11,12 @@ namespace AppConfigRefresh
 {
     public class durable
     {
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
 
-        public durable(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        //public durable(IConfiguration configuration)
+        //{
+        //    _configuration = configuration;
+        //}
 
         [Function(nameof(durable))]
         public async Task<List<string>> RunOrchestrator(
@@ -39,7 +39,7 @@ namespace AppConfigRefresh
         public string SayHello([ActivityTrigger] string name, FunctionContext executionContext)
         {
             ILogger logger = executionContext.GetLogger("SayHello");
-            logger.LogInformation("Saying hello to {name}.", _configuration["TestApp"]);
+            logger.LogInformation("Saying hello to "); //,  +_configuration["TestApp"]);
             return $"Hello {name}!";
         }
 

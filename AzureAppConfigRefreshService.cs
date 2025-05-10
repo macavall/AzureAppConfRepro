@@ -27,6 +27,7 @@ internal sealed class AzureAppConfigRefreshService : BackgroundService
             {
                 foreach (var refresher in _refreshers)
                 {
+                    //refresher.
                     await refresher.TryRefreshAsync(stoppingToken);
                 }
 
