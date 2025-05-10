@@ -14,7 +14,7 @@ using System.Threading;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = FunctionsApplication.CreateBuilder(args);
 
@@ -25,12 +25,12 @@ public class Program
                 throw new InvalidOperationException("The environment variable 'AZURE_APPCONFIG_CONNECTION_STRING' is not set or is empty.");
             options.Connect(connectionString)
                    // Load all keys that start with `TestApp:` and have no label
-                   .Select("TestApp")
-                   .ConfigureRefresh(options =>
-                   {
-                       options.RegisterAll();
-                       options.SetRefreshInterval(TimeSpan.FromSeconds(5));
-                   });
+                   .Select("TestApp");
+                   //.ConfigureRefresh(options =>
+                   //{
+                   //    options.RegisterAll();
+                   //    //options.SetRefreshInterval(TimeSpan.FromSeconds(5));
+                   //});
         });
 
         builder.Services
@@ -43,6 +43,8 @@ public class Program
         builder.UseAzureAppConfiguration();
         builder.ConfigureFunctionsWebApplication();
 
-        builder.Build().Run();
+        var temp = builder.Build();
+
+        await temp.RunAsync();
     }
 }
