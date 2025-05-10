@@ -50,34 +50,34 @@ public class Program
         builder.Build().Run();
     }
 
-    internal sealed class AzureAppConfigRefreshService : BackgroundService
-    {
-        private readonly IEnumerable<IConfigurationRefresher> _refreshers;
+    //internal sealed class AzureAppConfigRefreshService : BackgroundService
+    //{
+    //    private readonly IEnumerable<IConfigurationRefresher> _refreshers;
 
-        public AzureAppConfigRefreshService(IConfigurationRefresherProvider refresherProvider)
-        {
-            _refreshers = refresherProvider.Refreshers;
-        }
+    //    public AzureAppConfigRefreshService(IConfigurationRefresherProvider refresherProvider)
+    //    {
+    //        _refreshers = refresherProvider.Refreshers;
+    //    }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    foreach (var refresher in _refreshers)
-                    {
-                        await refresher.TryRefreshAsync(stoppingToken);
-                    }
+    //    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    //    {
+    //        while (!stoppingToken.IsCancellationRequested)
+    //        {
+    //            try
+    //            {
+    //                foreach (var refresher in _refreshers)
+    //                {
+    //                    await refresher.TryRefreshAsync(stoppingToken);
+    //                }
 
-                    await Task.Delay(0);
-                }
-                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-                {
-                    Console.WriteLine("AzureAppConfig has been stopped");
-                    break;
-                }
-            }
-        }
-    }
+    //                await Task.Delay(0);
+    //            }
+    //            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+    //            {
+    //                Console.WriteLine("AzureAppConfig has been stopped");
+    //                break;
+    //            }
+    //        }
+    //    }
+    //}
 }
