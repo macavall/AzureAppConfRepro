@@ -25,7 +25,12 @@ public class Program
                 throw new InvalidOperationException("The environment variable 'AZURE_APPCONFIG_CONNECTION_STRING' is not set or is empty.");
             options.Connect(connectionString)
                    // Load all keys that start with `TestApp:` and have no label
-                   .Select("TestApp");
+                   .Select("TestApp")
+                   .ConfigureRefresh(options =>
+                   {
+                       options.RegisterAll();
+                       options.SetRefreshInterval(TimeSpan.FromSeconds(5));
+                   });
         });
 
         builder.Services
