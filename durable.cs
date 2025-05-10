@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AppConfigRefresh
 {
-    public class durable
+    public static class durable
     {
         //private readonly IConfiguration _configuration;
 
@@ -19,7 +19,7 @@ namespace AppConfigRefresh
         //}
 
         [Function(nameof(durable))]
-        public async Task<List<string>> RunOrchestrator(
+        public static async Task<List<string>> RunOrchestrator(
             [OrchestrationTrigger] TaskOrchestrationContext context)
         {
             ILogger logger = context.CreateReplaySafeLogger(nameof(durable));
@@ -36,7 +36,7 @@ namespace AppConfigRefresh
         }
 
         [Function(nameof(SayHello))]
-        public string SayHello([ActivityTrigger] string name, FunctionContext executionContext)
+        public static string SayHello([ActivityTrigger] string name, FunctionContext executionContext)
         {
             ILogger logger = executionContext.GetLogger("SayHello");
             logger.LogInformation("Saying hello to "); //,  +_configuration["TestApp"]);
@@ -44,7 +44,7 @@ namespace AppConfigRefresh
         }
 
         [Function("durable_HttpStart")]
-        public async Task<HttpResponseData> HttpStart(
+        public static async Task<HttpResponseData> HttpStart(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
             [DurableClient] DurableTaskClient client,
             FunctionContext executionContext)
