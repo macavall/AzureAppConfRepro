@@ -17,6 +17,11 @@ public class Program
     {
         var builder = FunctionsApplication.CreateBuilder(args);
 
+        builder.Services.AddLogging(logging =>
+        {
+            logging.AddFilter("Microsoft.Extensions.Configuration.AzureAppConfiguration", LogLevel.Debug);
+        });
+
         // Connect to Azure App Configuration
         builder.Configuration.AddAzureAppConfiguration(options =>
         {
