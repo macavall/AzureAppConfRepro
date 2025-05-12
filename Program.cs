@@ -67,11 +67,14 @@ internal sealed class SuppressRefreshMiddleware : IFunctionsWorkerMiddleware
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        // Log any access to refreshers
-        if (_refresherProvider.Refreshers.Any())
+        await Task.Factory.StartNew(() =>
         {
-            _logger.LogWarning("AzureAppConfigurationRefreshMiddleware may attempt refresh. Refreshers detected: {Count}", _refresherProvider.Refreshers.Count());
-        }
+            // Log any access to refreshers
+            if (_refresherProvider.Refreshers.Any())
+            {
+                _logger.LogWarning("AzureAppConfigurationRefreshMiddleware may attempt refresh. Refreshers detected: {Count}", _refresherProvider.Refreshers.Count());
+            }
+        });
 
         // Proceed to the next middleware
         await next(context);
