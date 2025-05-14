@@ -27,7 +27,7 @@ public static class AzureAppConfigurationRefreshExtensions2
 
 internal class AzureAppConfigurationRefreshMiddleware2 : IFunctionsWorkerMiddleware
 {
-    private static readonly long MinimumRefreshInterval = TimeSpan.FromSeconds(60.0).Ticks;
+    private static readonly long MinimumRefreshInterval = TimeSpan.FromSeconds(1.0).Ticks;
 
     private long _refreshReadyTime = DateTimeOffset.UtcNow.Ticks;
 
@@ -40,26 +40,23 @@ internal class AzureAppConfigurationRefreshMiddleware2 : IFunctionsWorkerMiddlew
 
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        if (1 == 2)
+        long ticks = DateTimeOffset.UtcNow.Ticks;
+        long num = Interlocked.Read(ref _refreshReadyTime);
+        if (num <= ticks && Interlocked.CompareExchange(ref _refreshReadyTime, ticks + MinimumRefreshInterval, num) == num)
         {
-            long ticks = DateTimeOffset.UtcNow.Ticks;
-            long num = Interlocked.Read(ref _refreshReadyTime);
-            if (num <= ticks && Interlocked.CompareExchange(ref _refreshReadyTime, ticks + MinimumRefreshInterval, num) == num)
+            using (ExecutionContext.SuppressFlow())
             {
-                using (ExecutionContext.SuppressFlow())
+                foreach (IConfigurationRefresher refresher in Refreshers)
                 {
-                    foreach (IConfigurationRefresher refresher in Refreshers)
-                    {
-                        _ = Task.Factory.StartNew(() =>
-                        {
-                            Task.Run(() => refresher.TryRefreshAsync());
-                        });
-                    }
+                    Task.Run(() => refresher.TryRefreshAsync());
                 }
             }
         }
         
-        await next(context).ConfigureAwait(continueOnCapturedContext: false);
+        // OLD VERSION
+        //await next(context).ConfigureAwait(continueOnCapturedContext: false);
+
+        await next(context); //.ConfigureAwait(true); // continueOnCapturedContext: false);
     }
 }
 
