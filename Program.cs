@@ -12,6 +12,57 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using System.Collections.Generic;
 using System.Threading;
 
+public static class AzureAppConfigurationRefreshExtensions2
+{
+    public static IFunctionsWorkerApplicationBuilder UseAzureAppConfiguration2(this IFunctionsWorkerApplicationBuilder builder)
+    {
+        IEnumerable<IConfigurationRefresher> refreshers = (ServiceProviderServiceExtensions.GetService<IConfigurationRefresherProvider>(builder.Services.BuildServiceProvider()) ?? throw new InvalidOperationException("Unable to find the required services. Please add all the required services by calling 'IServiceCollection.AddAzureAppConfiguration()' in the application startup code.")).Refreshers;
+        if (refreshers != null && refreshers.Count() > 0)
+        {
+            builder.UseMiddleware<AzureAppConfigurationRefreshMiddleware2>();
+        }
+        return builder;
+    }
+}
+
+internal class AzureAppConfigurationRefreshMiddleware2 : IFunctionsWorkerMiddleware
+{
+    private static readonly long MinimumRefreshInterval = TimeSpan.FromSeconds(60.0).Ticks;
+
+    private long _refreshReadyTime = DateTimeOffset.UtcNow.Ticks;
+
+    private IEnumerable<IConfigurationRefresher> Refreshers { get; }
+
+    public AzureAppConfigurationRefreshMiddleware2(IConfigurationRefresherProvider refresherProvider)
+    {
+        Refreshers = refresherProvider.Refreshers;
+    }
+
+    public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
+    {
+        if (1 == 2)
+        {
+            long ticks = DateTimeOffset.UtcNow.Ticks;
+            long num = Interlocked.Read(ref _refreshReadyTime);
+            if (num <= ticks && Interlocked.CompareExchange(ref _refreshReadyTime, ticks + MinimumRefreshInterval, num) == num)
+            {
+                using (ExecutionContext.SuppressFlow())
+                {
+                    foreach (IConfigurationRefresher refresher in Refreshers)
+                    {
+                        _ = Task.Factory.StartNew(() =>
+                        {
+                            Task.Run(() => refresher.TryRefreshAsync());
+                        });
+                    }
+                }
+            }
+        }
+        
+        await next(context).ConfigureAwait(continueOnCapturedContext: false);
+    }
+}
+
 public class Program
 {
     public static void Main(string[] args)
@@ -42,7 +93,7 @@ public class Program
             .AddAzureAppConfiguration()
             .AddFeatureManagement();
 
-        builder.UseAzureAppConfiguration();
+        builder.UseAzureAppConfiguration2();
         builder.ConfigureFunctionsWebApplication();
 
         //builder
