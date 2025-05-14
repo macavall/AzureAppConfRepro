@@ -39,7 +39,6 @@ public class Program
         builder.Services
             .AddApplicationInsightsTelemetryWorkerService()
             .ConfigureFunctionsApplicationInsights()
-            .AddHostedService<AzureAppConfigRefreshService>()
             .AddAzureAppConfiguration()
             .AddFeatureManagement();
 
