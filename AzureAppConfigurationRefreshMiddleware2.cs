@@ -54,9 +54,9 @@ namespace AppConfigRefresh
             }
 
             // OLD VERSION
-            //await next(context).ConfigureAwait(continueOnCapturedContext: false);
+            await next(context).ConfigureAwait(continueOnCapturedContext: false);
 
-            await next(context); //.ConfigureAwait(true); // continueOnCapturedContext: false);
+            //await next(context); //.ConfigureAwait(true); // continueOnCapturedContext: false);
         }
     }
 }
